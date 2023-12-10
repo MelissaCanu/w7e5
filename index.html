@@ -17,7 +17,7 @@
   </head>
 
   <body>
-    <h1 class="my-3 ms-2">CRUDAZON</h1>
+    <h1 class="my-3 ms-2 fw-bold text-primary">CRUDAZON</h1>
     <div id="card-container" class="mx-3"></div>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
@@ -132,14 +132,17 @@
 
         products.forEach((product) => {
           const cardCol = document.createElement("div");
-          cardCol.className = "col-12 col-sm-6 col-md-4 col-lg-3 mb-3 p-4";
+          cardCol.className =
+            "card-group col-12 col-sm-6 col-md-4 col-lg-3 mb-3 p-4";
           const card = document.createElement("div");
-          card.className = "card";
+          card.className = "card card-group-item";
           const cardBodyOne = document.createElement("div");
           cardBodyOne.className = "card-body card-body-one d-flex flex-column";
-          const productName = document.createElement("div");
+          const productName = document.createElement("h5");
+          productName.className = "card-title text-primary fw-bold";
           productName.textContent = product.name;
-          const productDescription = document.createElement("div");
+          const productDescription = document.createElement("p");
+          productDescription.className = "card-text text-secondary";
           productDescription.textContent = product.description;
           const productBrand = document.createElement("div");
           productBrand.textContent = product.productBrand;
@@ -150,8 +153,9 @@
           image.alt = product.name;
           const cardBodyTwo = document.createElement("div");
           cardBodyTwo.className = "card-body card-body-two d-flex flex-column";
-          const productPrice = document.createElement("div");
-          productPrice.textContent = product.price;
+          const productPrice = document.createElement("p");
+          productPrice.className = "fw-bold";
+          productPrice.textContent = product.price + "$";
           const productId = document.createElement("div");
           productId.textContent = product._id;
           const productUserId = document.createElement("div");
@@ -162,11 +166,24 @@
           updatedAt.textContent = product.updatedAt;
           const V = document.createElement("div");
           V.textContent = product.__v;
+          const btnsDiv = document.createElement("div");
+          btnsDiv.className = "d-flex justify-content-center";
+          const buyBtnDiv = document.createElement("div");
+          buyBtnDiv.className = "d-flex";
+          const buyBtn = document.createElement("button");
+          buyBtn.className = "btn btn-primary me-2 text-white";
+          buyBtn.textContent = "Buy Product";
+          const detailsBtnDiv = document.createElement("div");
+          detailsBtnDiv.className = "d-flex";
+          const detailsBtn = document.createElement("button");
+          detailsBtn.className = "btn btn-secondary me-2 text-white";
+          detailsBtn.textContent = "View Details";
           const modifyBtnDiv = document.createElement("div");
-          modifyBtnDiv.className = "d-flex justify-content-center";
+          modifyBtnDiv.className = "d-flex";
           const modifyBtn = document.createElement("a");
-          modifyBtn.href = "#"; /* per ora */
-          modifyBtn.className = "btn btn-success mx-2 px-4";
+          modifyBtn.href = "backoffice.html";
+          modifyBtn.className = "btn btn-success text-white";
+          modifyBtn.textContent = "Modify Product";
 
           /* appendo ogni ben dell'universo */
           cardRow.appendChild(cardCol);
@@ -184,8 +201,17 @@
           cardBodyTwo.appendChild(createdAt);
           cardBodyTwo.appendChild(updatedAt);
           cardBodyTwo.appendChild(V);
-          cardBodyTwo.appendChild(modifyBtnDiv);
+
           modifyBtnDiv.appendChild(modifyBtn);
+
+          buyBtnDiv.appendChild(buyBtn);
+          btnsDiv.appendChild(buyBtnDiv);
+
+          detailsBtnDiv.appendChild(detailsBtn);
+          btnsDiv.appendChild(detailsBtnDiv);
+
+          btnsDiv.appendChild(modifyBtnDiv);
+          cardBodyTwo.appendChild(btnsDiv);
         });
       };
 
