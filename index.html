@@ -1,6 +1,7 @@
 <!-- Prof, questa è letteralmente la quinta volta che ricomincio da capo, ma finalmente sono riuscita a fare il post senza errori. 
     Spero apprezzi il fatto che ho provato da sola (nel senso non consultandomi con altre persone), 
-    con l'aiuto del suo codice e di risorse online per cercare di capire il tutto -->
+    con l'aiuto del suo codice e di risorse online per cercare di capire il tutto. 
+    Dovrò ristudiarmi tutto durante il periodo natalizio-->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -166,6 +167,8 @@
           updatedAt.textContent = product.updatedAt;
           const V = document.createElement("div");
           V.textContent = product.__v;
+
+          /* bottoni */
           const btnsDiv = document.createElement("div");
           btnsDiv.className = "d-flex justify-content-center";
           const buyBtnDiv = document.createElement("div");
@@ -175,7 +178,8 @@
           buyBtn.textContent = "Buy Product";
           const detailsBtnDiv = document.createElement("div");
           detailsBtnDiv.className = "d-flex";
-          const detailsBtn = document.createElement("button");
+          const detailsBtn = document.createElement("a");
+          detailsBtn.href = "details.html";
           detailsBtn.className = "btn btn-secondary me-2 text-white";
           detailsBtn.textContent = "View Details";
           const modifyBtnDiv = document.createElement("div");
