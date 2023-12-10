@@ -1,0 +1,197 @@
+<!-- Prof, questa è letteralmente la quinta volta che ricomincio da capo, ma finalmente sono riuscita a fare il post senza errori. 
+    Spero apprezzi il fatto che ho provato da sola (nel senso non consultandomi con altre persone), 
+    con l'aiuto del suo codice e di risorse online per cercare di capire il tutto -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CRUD Products</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+  </head>
+
+  <body>
+    <h1 class="my-3 ms-2">CRUDAZON</h1>
+    <div id="card-container" class="mx-3"></div>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+      const URL = "https://striveschool-api.herokuapp.com/api/product/";
+
+      const createInitialProducts = () => {
+        return [
+          {
+            userId: "Chandler Bing",
+            name: "Nokia 3210",
+            description: "Best cellphone ever",
+            brand: "Nokia",
+            imageUrl:
+              "https://i.ebayimg.com/images/g/8ucAAOxyvSVREXUL/s-l1600.jpg",
+            price: 40,
+          },
+          {
+            userId: "Kim Stewart",
+            name: "Lego Knight Castle",
+            description: "Best castle ever",
+            brand: "Lego",
+            imageUrl:
+              "https://i.ebayimg.com/images/g/xWwAAOSw3gJjaSsA/s-l1600.png",
+            price: 70,
+          },
+          {
+            userId: "Doraemon",
+            name: "Casio Watch",
+            description: "Best watch ever",
+            brand: "Casio",
+            imageUrl:
+              "https://www.casio.com/content/casio/locales/it/it/products/corporate/casio-corporate/news/2023/0718/_jcr_content/root/responsivegrid/container/image.casiocoreimg.jpeg/1695643651983/ca-500-metallic-color.jpeg",
+            price: 20,
+          },
+          {
+            userId: "Jennifer Aniston",
+            name: "SNES",
+            description: "Best console ever",
+            brand: "Nintendo",
+            imageUrl:
+              "https://pbs.twimg.com/media/FQDg-zlWUAAiHcT?format=jpg&name=4096x4096",
+            price: 50,
+          },
+        ];
+      };
+
+      const fetchData = () => {
+        fetch(URL, {
+          headers: {
+            Authorization:
+              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTc2MjIyMjNkYWRhMDAwMThhNmEwZDAiLCJpYXQiOjE3MDIyNDA4MDIsImV4cCI6MTcwMzQ1MDQwMn0.3M9shCju1fERlFJckA5pWTMp6SnaKBlpCYXe9p0aH_Y",
+          },
+        })
+          .then((response) => {
+            if (response.status === 404)
+              throw new Error("Errore, risorsa non trovata");
+            if (response.status >= 400 && response.status < 500)
+              throw new Error("Errore lato Client");
+            if (response.status >= 500 && response.status < 600)
+              throw new Error("Errore lato Server");
+            if (!response.ok)
+              throw new Error("Errore nel reperimento dei dati");
+
+            return response.json();
+          })
+          .then((products) => {
+            if (products.length === 0) {
+              const initialProducts = createInitialProducts();
+              sendInitialProducts(initialProducts);
+            } else {
+              displayProducts(products);
+            }
+          })
+          .catch((err) => {
+            console.log("HUSTON ABBIAMO UN PROBLEMA: ", err);
+          });
+      };
+
+      const sendInitialProducts = (initialProducts) => {
+        fetch(URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization:
+              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTc2MjIyMjNkYWRhMDAwMThhNmEwZDAiLCJpYXQiOjE3MDIyNDA4MDIsImV4cCI6MTcwMzQ1MDQwMn0.3M9shCju1fERlFJckA5pWTMp6SnaKBlpCYXe9p0aH_Y",
+          },
+          body: JSON.stringify(initialProducts),
+        })
+          .then((response) => {
+            console.log("POST Request status:", response.status);
+            return response.json();
+          })
+          .then((updatedProducts) => {
+            console.log("Updated products after POST:", updatedProducts);
+            displayProducts(updatedProducts);
+          })
+          .catch((err) => {
+            console.log("Error in sending initial data:", err);
+          });
+      };
+
+      const displayProducts = (products) => {
+        const cardContainer = document.getElementById("card-container");
+        const cardRow = document.createElement("div");
+        cardRow.className = "row p-4";
+        cardContainer.appendChild(cardRow);
+
+        products.forEach((product) => {
+          const cardCol = document.createElement("div");
+          cardCol.className = "col-12 col-sm-6 col-md-4 col-lg-3 mb-3 p-4";
+          const card = document.createElement("div");
+          card.className = "card";
+          const cardBodyOne = document.createElement("div");
+          cardBodyOne.className = "card-body card-body-one d-flex flex-column";
+          const productName = document.createElement("div");
+          productName.textContent = product.name;
+          const productDescription = document.createElement("div");
+          productDescription.textContent = product.description;
+          const productBrand = document.createElement("div");
+          productBrand.textContent = product.productBrand;
+          const imageDiv = document.createElement("div");
+          const image = document.createElement("img");
+          image.src = product.imageUrl;
+          image.className = "card-img-top img-fluid";
+          image.alt = product.name;
+          const cardBodyTwo = document.createElement("div");
+          cardBodyTwo.className = "card-body card-body-two d-flex flex-column";
+          const productPrice = document.createElement("div");
+          productPrice.textContent = product.price;
+          const productId = document.createElement("div");
+          productId.textContent = product._id;
+          const productUserId = document.createElement("div");
+          productUserId.textContent = product.userId;
+          const createdAt = document.createElement("div");
+          createdAt.textContent = product.createdAt;
+          const updatedAt = document.createElement("div");
+          updatedAt.textContent = product.updatedAt;
+          const V = document.createElement("div");
+          V.textContent = product.__v;
+          const modifyBtnDiv = document.createElement("div");
+          modifyBtnDiv.className = "d-flex justify-content-center";
+          const modifyBtn = document.createElement("a");
+          modifyBtn.href = "#"; /* per ora */
+          modifyBtn.className = "btn btn-success mx-2 px-4";
+
+          /* appendo ogni ben dell'universo */
+          cardRow.appendChild(cardCol);
+          cardCol.appendChild(card);
+          card.appendChild(cardBodyOne);
+          cardBodyOne.appendChild(productName);
+          cardBodyOne.appendChild(productDescription);
+          cardBodyOne.appendChild(productBrand);
+          card.appendChild(imageDiv);
+          imageDiv.appendChild(image);
+          card.appendChild(cardBodyTwo);
+          cardBodyTwo.appendChild(productPrice);
+          cardBodyTwo.appendChild(productId);
+          cardBodyTwo.appendChild(productUserId);
+          cardBodyTwo.appendChild(createdAt);
+          cardBodyTwo.appendChild(updatedAt);
+          cardBodyTwo.appendChild(V);
+          cardBodyTwo.appendChild(modifyBtnDiv);
+          modifyBtnDiv.appendChild(modifyBtn);
+        });
+      };
+
+      window.addEventListener("DOMContentLoaded", () => {
+        fetchData();
+      });
+    </script>
+  </body>
+</html>
