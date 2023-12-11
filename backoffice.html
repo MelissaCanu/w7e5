@@ -12,8 +12,10 @@
     />
   </head>
   <body class="p-4">
+    <div id="alert-box"></div>
     <h1 class="my-3 ms-2 fw-bold text-primary">Backoffice - CRUDAZON</h1>
-    <form id="productForm">
+    <h5 id="subtitle"></h5>
+    <form id="productForm" onsubmit="handleSubmit(event)">
       <div class="mb-3">
         <label for="productName" class="form-label">Product Name *</label>
         <input type="text" class="form-control" id="productName" required />
@@ -38,6 +40,22 @@
         <label for="productPrice" class="form-label">Price *</label>
         <input type="number" class="form-control" id="productPrice" required />
       </div>
+      <div class="mb-3">
+        <label for="userId" class="form-label">User Id *</label>
+        <input type="number" class="form-control" id="userId" required />
+      </div>
+
+      <!-- bottoni -->
+      <div class="d-flex justify-content-between">
+        <button type="submit" class="btn btn-primary">Create Product</button>
+        <button
+          type="button"
+          class="btn btn-danger d-none"
+          onclick="handleDelete()"
+        >
+          Delete Product
+        </button>
+      </div>
     </form>
 
     <script
@@ -45,5 +63,191 @@
       integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
       crossorigin="anonymous"
     ></script>
+
+    <script>
+      //   const URL = "https://striveschool-api.herokuapp.com/api/product/";
+
+      //   const productForm = document.getElementById("productForm");
+
+      //   productForm.addEventListener("submit", function (event) {
+      //     event.preventDefault();
+
+      //     const formData = new FormData(productForm);
+      //     const productData = {};
+
+      //     formData.forEach((value, key) => {
+      //       productData[key] = value;
+      //     });
+
+      //     fetch(backofficeURL, {
+      //       method: "POST",
+      //       headers: {
+      //         "Content-Type": "application/json",
+      //         Authorization:
+      //           "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTc2MjIyMjNkYWRhMDAwMThhNmEwZDAiLCJpYXQiOjE3MDIyNDA4MDIsImV4cCI6MTcwMzQ1MDQwMn0.3M9shCju1fERlFJckA5pWTMp6SnaKBlpCYXe9p0aH_Y",
+      //       },
+      //       body: JSON.stringify(productData),
+      //     })
+      //       .then((response) => response.json())
+      //       .then((newProduct) => {
+      //         console.log("New Product added:", newProduct);
+      //         alert("You have successfully added a new product!");
+      //       })
+      //       .catch((error) => {
+      //         console.error("Error adding product:", error);
+      //         alert("Product creation failed, please verify your data");
+      //       });
+      //   });
+
+      const resourceId = new URLSearchParams(window.location.search).get(
+        "resourceId"
+      );
+      console.log("RESOURCE ID: ", resourceId);
+
+      const URL = resourceId
+        ? "https://striveschool-api.herokuapp.com/api/product/" + resourceId
+        : "https://striveschool-api.herokuapp.com/api/product/";
+      console.log("URL: ", URL);
+
+      const method = resourceId ? "PUT" : "POST";
+      console.log("method: ", method);
+
+      window.addEventListener("DOMContentLoaded", () => {
+        const submitBtn = document.querySelector("button[type='submit']");
+        const deleteBtn = document.querySelector(
+          "button[type='button'].btn-danger"
+        );
+        const subtitle = document.getElementById("subtitle");
+
+        if (resourceId) {
+          // se siamo qui significa che abbiamo un id nella URL e siamo quindi in modalità modifica
+
+          // cambia testo sottotitolo se siamo arrivati sulla pagina per modificare una risorsa esistente
+          subtitle.innerText = "— Modifica Appuntamento";
+
+          // modifica aspetto del bottone submit
+          submitBtn.classList.remove("btn-primary");
+          submitBtn.classList.add("btn-success");
+          submitBtn.innerText = "Modify Product";
+
+          // gestione pulsante di delete
+          deleteBtn.classList.remove("d-none");
+
+          // fetch di tipo GET su endpoint con id incorporato
+          fetch(URL)
+            .then((resp) => resp.json())
+            .then(({ name, description, brand, imageUrl, price, userId }) => {
+              document.getElementById("productName").value = name;
+              document.getElementById("productDescription").value = description;
+              document.getElementById("productBrand").value = name;
+              document.getElementById("productImageUrl").value = imageUrl;
+              document.getElementById("productPrice").value = price;
+              document.getElementById("userId").value = userId;
+            });
+        } else {
+          subtitle.innerText = "— Crea Prodotto";
+        }
+      });
+
+      const handleSubmit = (event) => {
+        event.preventDefault();
+        const form = event.target;
+
+        const newProduct = {
+          name: document.getElementById("productName").value,
+          description: document.getElementById("productDescription").value,
+          brand: document.getElementById("productBrand").value,
+          imageUrl: document.getElementById("productImageUrl").value,
+          price: document.getElementById("productPrice").value,
+          userId: document.getElementById("userId").value,
+        };
+
+        // qui l'endpoint dipende da come siamo arrivati su questa pagina, se per creazione sarà solo l'url normale, se per modifica avrà anche l'id
+        // questo è deciso dal ternary operator alla creazione della variabile "URL" in alto
+        fetch(URL, {
+          // method: method,
+          method, // uguale a scrivere method: method
+          body: JSON.stringify(newProduct), // è fondamentale fare la stringhifizzazione dell'oggetto nativo o invieremo "[object Object]"
+          // un header in particolare è importantissimo, il Content-Type, per specificare il formato di invio, altrimenti non verrà riconosciuto dal server
+          // l'Authorization header serve in caso di API che richiedono autenticazione tramite una API Key
+          headers: {
+            "Content-Type": "application/json",
+            Authorization:
+              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTc2MjIyMjNkYWRhMDAwMThhNmEwZDAiLCJpYXQiOjE3MDIyNDA4MDIsImV4cCI6MTcwMzQ1MDQwMn0.3M9shCju1fERlFJckA5pWTMp6SnaKBlpCYXe9p0aH_Y",
+          },
+        })
+          .then((resp) => resp.json())
+          .then((createdObj) => {
+            // Aspettiamo il valore di createdObj per estrarre un'informazione nuova generata dal server ad es. l'_id
+
+            // in base a come siamo arrivati qui, per creazione o modifica, creeremo il messaggio più appropriato alla fine della richiesta
+
+            if (resourceId) {
+              showAlert(
+                "Risorsa con id: " +
+                  createdObj._id +
+                  " modificata con successo!",
+                "success"
+              );
+            } else {
+              showAlert(
+                "Risorsa con id: " + createdObj._id + " creata con successo!"
+              );
+
+              // pulizia dei campi solo in modalità CREAZIONE (POST)
+              form.reset();
+            }
+          });
+      };
+
+      const showAlert = (message, colorCode = "primary") => {
+        // questa funzione ci permette di creare degli alert custom che comporremo con messaggio dinamico e colorCode opzionale
+
+        const alertBox = document.getElementById("alert-box");
+        alertBox.innerHTML = `<div class="alert alert-${colorCode}" role="alert">
+                                ${message}
+                                </div>`;
+
+        // gli alert spariranno dopo il tempo desiderato
+        setTimeout(() => {
+          alertBox.innerHTML = "";
+        }, 3000);
+      };
+
+      const handleDelete = () => {
+        // chiediamo conferma all'utente di voler eliminare
+        const hasConfirmed = confirm(
+          "sei sicuro di voler eliminare l'appuntamento?"
+        );
+
+        if (hasConfirmed) {
+          // se accetta procediamo all'effettiva rimozione
+
+          fetch(URL, {
+            method: "DELETE",
+          }) // già a questo punto la risorsa è stata eliminata
+            .then((resp) => {
+              // aspettare con un then ci può essere utile solo per sapere esattamente quando il server ci ha risposto per avere ulteriore conferma
+              if (resp.ok) {
+                return resp.json();
+              }
+            })
+            .then((deletedObj) => {
+              showAlert(
+                "hai eliminato la risorsa " +
+                  deletedObj.name +
+                  " che aveva id: " +
+                  deletedObj._id,
+                "danger"
+              );
+              // un alert custom non fa attendere prima del cambio pagina con window.location assign,
+              // abbiamo quindi bisogno di un setTimeout per forzare l'attesa per il tempo desiderato
+              setTimeout(() => {
+                window.location.assign("./index.html");
+              }, 3000);
+            });
+        }
+      };
+    </script>
   </body>
 </html>
